@@ -1,0 +1,20 @@
+# OS Garbage
+*.DS_Store
+[Tt]humbs.db
+
+# Visual Studio
+[Oo]bj
+[Bb]in
+*.user
+*.suo
+*.[Cc]ache
+*.bak
+*.ncb
+*.log
+
+# ReSharper
+_ReSharper.*
+*.resharper
+
+# NuGet
+packages/
