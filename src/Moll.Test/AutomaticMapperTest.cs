@@ -128,5 +128,26 @@ namespace Moll.Test
             Assert.AreEqual(src.Prop1.ToString(CultureInfo.InvariantCulture), dest.Prop1);
             Assert.AreEqual(src.Prop2, dest.Prop2);
         }
+
+        [Test]
+        public void MapMultipleSrcsWithSameMapper()
+        {
+            var mapper = new AutomaticMapper<TestSrcClass1, TestDestClass1>();
+
+            var src1 = new TestSrcClass1 {Prop1 = 1, Prop2 = "Test"};
+            var src2 = new TestSrcClass1 {Prop1 = 2, Prop2 = "Test"};
+
+            var dest1 = mapper.Map(src1);
+            var dest2 = mapper.Map(src2);
+
+            Assert.IsNotNull(dest1);
+            Assert.IsNotNull(dest2);
+
+            Assert.AreEqual(src1.Prop1, dest1.Prop1);
+            Assert.AreEqual(src2.Prop1, dest2.Prop1);
+
+            Assert.AreEqual(src1.Prop2, dest1.Prop2);
+            Assert.AreEqual(src2.Prop2, dest2.Prop2);
+        }
     }
 }
