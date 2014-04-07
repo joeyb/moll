@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyProductAttribute("Moll")]
+[assembly: AssemblyCopyrightAttribute("Copyright © Joey Bratton 2014")]
 [assembly: AssemblyVersionAttribute("0.1.0")]
 [assembly: AssemblyFileVersionAttribute("0.1.0")]
 [assembly: ComVisibleAttribute(false)]

@@ -24,6 +24,7 @@ let releaseNotes = parseReleaseNotes (System.IO.File.ReadAllLines "VERSIONS.md")
 Target "AssemblyInfo" (fun _ ->
     CreateCSharpAssemblyInfo "src/SolutionInfo.cs"
       [ Attribute.Product projectName
+        Attribute.Copyright "Copyright © Joey Bratton 2014"
         Attribute.Version releaseNotes.AssemblyVersion
         Attribute.FileVersion releaseNotes.AssemblyVersion
         Attribute.ComVisible false ]
@@ -62,6 +63,7 @@ Target "CreatePackage" (fun _ ->
             Summary = projectSummary
             WorkingDir = packagingDir
             Version = releaseNotes.AssemblyVersion
+            ReleaseNotes = releaseNotes.Notes |> toLines
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
             "Moll.nuspec"
