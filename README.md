@@ -26,6 +26,22 @@ If you need to map a huge number of objects or have very custom needs then
 you'll probably just want to make your own custom implementation of the
 `IMapper<TSrc, TDest>` interface.
 
+## Usage
+
+```
+PM> Install-Package Moll
+```
+
+Then start making your own mappers, either by using `AutomaticMapper<TSrc, TDest>`
+as a base or building your own custom implementation of the `IMapper<TSrc, TDest>`
+interface.
+
+You can then just directly new up instances of those mappers and use them, or
+configure your IoC container so that it knows about the mappers and let it handle
+injecting the proper implementation of any mappers that you need. This is definitely
+the suggested route, especially because it makes nested mappers trivial since the
+mappers can have any dependencies injected that they need (including other mappers).
+
 ## What does the name Moll mean?
 [Herman Moll](http://en.wikipedia.org/wiki/Herman_Moll) was an early cartographer
 who published one of the most famous early maps of North America, unofficially
