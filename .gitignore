@@ -18,3 +18,10 @@ _ReSharper.*
 
 # NuGet
 packages/
+
+# Build
+build/
+packaging/
+test/
+tools/
+!tools/NuGet/
