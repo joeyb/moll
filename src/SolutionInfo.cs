@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyProductAttribute("Moll")]
 [assembly: AssemblyCopyrightAttribute("Copyright © Joey Bratton 2014")]
-[assembly: AssemblyVersionAttribute("0.1.0")]
-[assembly: AssemblyFileVersionAttribute("0.1.0")]
+[assembly: AssemblyVersionAttribute("0.1.1")]
+[assembly: AssemblyFileVersionAttribute("0.1.1")]
 [assembly: ComVisibleAttribute(false)]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "0.1.0";
+        internal const string Version = "0.1.1";
     }
 }
