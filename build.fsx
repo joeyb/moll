@@ -1,6 +1,9 @@
 // include Fake lib
 #r "tools/FAKE/tools/FakeLib.dll"
+open System.IO
 open Fake
+open Fake.AssemblyInfoFile
+open Fake.ReleaseNotesHelper
 
 RestorePackages()
 
@@ -15,9 +18,17 @@ let packagingRoot = "./packaging/"
 let packagingDir = packagingRoot @@ "moll"
 let testDir = "./test/"
 
-let version = "0.1" // TODO: Pull this from somewhere else
+let releaseNotes = parseReleaseNotes (System.IO.File.ReadAllLines "VERSIONS.md")
 
 // Targets
+Target "AssemblyInfo" (fun _ ->
+    CreateCSharpAssemblyInfo "src/SolutionInfo.cs"
+      [ Attribute.Product projectName
+        Attribute.Version releaseNotes.AssemblyVersion
+        Attribute.FileVersion releaseNotes.AssemblyVersion
+        Attribute.ComVisible false ]
+)
+
 Target "Build" (fun _ ->
     !! "src/Moll/Moll.csproj"
       |> MSBuildRelease buildDir "Build"
@@ -50,7 +61,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = packagingRoot
             Summary = projectSummary
             WorkingDir = packagingDir
-            Version = version
+            Version = releaseNotes.AssemblyVersion
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
             "Moll.nuspec"
@@ -68,14 +79,17 @@ Target "Test" (fun _ ->
 
 // Dependencies
 "Clean"
+  ==> "AssemblyInfo"
   ==> "Build"
   ==> "Default"
 
 "Clean"
+  ==> "AssemblyInfo"
   ==> "BuildTest"
   ==> "Test"
 
 "Clean"
+  ==> "AssemblyInfo"
   ==> "Build"
   ==> "CreatePackage"
 
