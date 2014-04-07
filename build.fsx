@@ -4,15 +4,20 @@ open Fake
 
 RestorePackages()
 
-// Properties
+let authors = ["Joey Bratton"]
+
+let projectName = "Moll"
+let projectDescription = "A simple .NET object mapper framework, intended to be used along with an IoC container."
+let projectSummary = projectDescription
+
 let buildDir = "./build/"
-let testDir  = "./test/"
+let packagingRoot = "./packaging/"
+let packagingDir = packagingRoot @@ "moll"
+let testDir = "./test/"
+
+let version = "0.1" // TODO: Pull this from somewhere else
 
 // Targets
-Target "Clean" (fun _ ->
-    CleanDirs [buildDir; testDir]
-)
-
 Target "Build" (fun _ ->
     !! "src/Moll/Moll.csproj"
       |> MSBuildRelease buildDir "Build"
@@ -25,6 +30,34 @@ Target "BuildTest" (fun _ ->
       |> Log "TestBuild-Output: "
 )
 
+Target "Clean" (fun _ ->
+    CleanDirs [buildDir; testDir]
+)
+
+Target "CreatePackage" (fun _ ->
+    let net45dir = packagingDir @@ "lib/net45/"
+
+    CleanDirs [packagingDir; net45dir]
+
+    CopyFile net45dir (buildDir @@ "Moll.dll")
+    CopyFiles packagingDir ["LICENSE.txt"; "README.md"]
+
+    NuGet (fun p ->
+        {p with
+            Authors = authors
+            Project = projectName
+            Description = projectDescription
+            OutputPath = packagingRoot
+            Summary = projectSummary
+            WorkingDir = packagingDir
+            Version = version
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+            "Moll.nuspec"
+)
+
+Target "Default" DoNothing
+
 Target "Test" (fun _ ->
     !! (testDir + "/*.Test.dll")
       |> NUnit (fun p ->
@@ -32,8 +65,6 @@ Target "Test" (fun _ ->
              DisableShadowCopy = true;
              OutputFile = testDir + "TestResults.xml"})
 )
-
-Target "Default" DoNothing
 
 // Dependencies
 "Clean"
@@ -43,6 +74,10 @@ Target "Default" DoNothing
 "Clean"
   ==> "BuildTest"
   ==> "Test"
+
+"Clean"
+  ==> "Build"
+  ==> "CreatePackage"
 
 // start build
 RunTargetOrDefault "Default"
