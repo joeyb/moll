@@ -10,4 +10,8 @@ if not exist tools\NUnit.Runners\tools\nunit-console.exe (
   "tools\nuget\nuget.exe" "install" "NUnit.Runners" "-OutputDirectory" "tools" "-ExcludeVersion"
 )
 
-"tools\FAKE\tools\Fake.exe" "build.fsx" %*
+if "%1"=="" (
+  "tools\FAKE\tools\Fake.exe" "build.fsx" Default
+) else (
+  "tools\FAKE\tools\Fake.exe" "build.fsx" %*
+)
