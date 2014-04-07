@@ -7,22 +7,28 @@ namespace Moll
         where TSrc : class
         where TDest : class, new()
     {
+        private readonly PropertyInfo[] _srcPropertyInfos;
+        private readonly PropertyInfo[] _destPropertyInfos;
+
+        public AutomaticMapper()
+        {
+            _srcPropertyInfos = typeof (TSrc)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+
+            _destPropertyInfos = typeof (TDest)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
+        }
+
         public TDest Map(TSrc src)
         {
             if (src == null) return null;
 
-            var srcProps = typeof (TSrc)
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
-
-            var destProps = typeof (TDest)
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
-
             var dest = new TDest();
 
-            foreach (var srcProp in srcProps)
+            foreach (var srcProp in _srcPropertyInfos)
             {
-                var destProp =
-                    destProps.FirstOrDefault(x => x.Name == srcProp.Name && x.PropertyType == srcProp.PropertyType);
+                var destProp = _destPropertyInfos
+                    .FirstOrDefault(x => x.Name == srcProp.Name && x.PropertyType == srcProp.PropertyType);
 
                 if (destProp == null) continue;
 
