@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Moll
@@ -7,16 +9,22 @@ namespace Moll
         where TSrc : class
         where TDest : class, new()
     {
-        private readonly PropertyInfo[] _srcPropertyInfos;
-        private readonly PropertyInfo[] _destPropertyInfos;
+        private readonly IReadOnlyCollection<Tuple<PropertyInfo, PropertyInfo>> _propertyInfoMappings; 
 
         public AutomaticMapper()
         {
-            _srcPropertyInfos = typeof (TSrc)
+            var srcPropertyInfos = typeof (TSrc)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
 
-            _destPropertyInfos = typeof (TDest)
+            var destPropertyInfos = typeof (TDest)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
+
+            _propertyInfoMappings = (from srcProp in srcPropertyInfos
+                                     let destProp =
+                                         destPropertyInfos.FirstOrDefault(
+                                             x => x.Name == srcProp.Name && x.PropertyType == srcProp.PropertyType)
+                                     where destProp != null
+                                     select new Tuple<PropertyInfo, PropertyInfo>(srcProp, destProp)).ToList();
         }
 
         public TDest Map(TSrc src)
@@ -25,14 +33,9 @@ namespace Moll
 
             var dest = new TDest();
 
-            foreach (var srcProp in _srcPropertyInfos)
+            foreach (var mapping in _propertyInfoMappings)
             {
-                var destProp = _destPropertyInfos
-                    .FirstOrDefault(x => x.Name == srcProp.Name && x.PropertyType == srcProp.PropertyType);
-
-                if (destProp == null) continue;
-
-                destProp.SetValue(dest, srcProp.GetValue(src));
+                mapping.Item2.SetValue(dest, mapping.Item1.GetValue(src));
             }
 
             AdditionalCustomMapping(src, dest);
